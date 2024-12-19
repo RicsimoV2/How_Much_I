@@ -1,0 +1,189 @@
+<CheckItem>
+    adaptive_height: True
+
+    MDCheckbox:
+        group: root.group
+
+    MDLabel:
+        text: root.text
+        adaptive_height: True
+        padding_x: "12dp"
+        pos_hint: {"center_y": .5}
+
+MDFloatLayout:
+
+    MDLabel:
+        text: "Cosa hai fatto ieri?"
+        halign: "center"
+        pos_hint: {'center_x': 0.5, 'top': 1}
+        size_hint_y: None
+        height: self.texture_size[1] + dp(24)
+
+
+    ScrollView:
+        size_hint_y: None
+        height: self.parent.height - dp(72)
+        pos_hint: {'top': 0.9}
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: dp(10)
+            padding: dp(16)
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Ore dormite notte"
+                    halign: "left"
+                MDSlider:
+                    step:1
+                    value: 0
+                    max: 12
+                    MDSliderHandle:
+
+                    MDSliderValueLabel:
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Pisolini"
+                    halign: "left"
+                MDCheckbox:
+                    id: pisolini
+                    on_active: app.on_checkbox_active(*args)
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Esercizio fisico"
+                    halign: "left"
+                MDCheckbox:
+                    id: esercizio
+                    on_active: app.on_checkbox_active(*args)
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Cacca"
+                    halign: "left"
+                MDSlider:
+                    step: 1
+                    value: 0
+                    max: 10
+                    MDSliderHandle:
+
+                    MDSliderValueLabel:
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Ridere"
+                    halign: "left"
+                MDCheckbox:
+                    id: Ridere
+                    on_active: app.on_checkbox_active(*args)
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Piangere"
+                    halign: "left"
+                MDCheckbox:
+                    id: pianger
+                    on_active: app.on_checkbox_active(*args)
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Trombato"
+                    halign: "left"
+                MDSlider:
+                    step:1
+                    value: 0
+                    max: 5
+                    MDSliderHandle:
+
+                    MDSliderValueLabel:
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Pizza mangiata"
+                    halign: "left"
+                MDCheckbox:
+                    id: Pizza
+                    on_active: app.on_checkbox_active(*args)
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Uscito con amici"
+                    halign: "left"
+                MDCheckbox:
+                    id: amici
+                    on_active: app.on_checkbox_active(*args)
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Alcolici"
+                    halign: "left"
+                MDCheckbox:
+                    id: alcolici
+                    on_active: app.on_checkbox_active(*args)
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Video giocare"
+                    halign: "left"
+                MDCheckbox:
+                    id: videogames
+                    on_active: app.on_checkbox_active(*args)
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Sigarette"
+                    halign: "left"
+                MDSlider:
+                    step: 1
+                    value: 0
+                    max: 10
+                    MDSliderHandle:
+
+                    MDSliderValueLabel:
