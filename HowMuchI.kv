@@ -12,18 +12,19 @@
 
 MDFloatLayout:
 
+    #Titolo
     MDLabel:
-        text: "Cosa hai fatto ieri?"
+        text: app.title_text
         halign: "center"
         pos_hint: {'center_x': 0.5, 'top': 1}
-        size_hint_y: None
+        size_hint_y: 0.2
         height: self.texture_size[1] + dp(24)
 
 
     ScrollView:
         size_hint_y: None
-        height: self.parent.height - dp(72)
-        pos_hint: {'top': 0.9}
+        height: self.parent.height - dp(110)
+        pos_hint: {'top': 0.8}
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -32,32 +33,60 @@ MDFloatLayout:
             spacing: dp(10)
             padding: dp(16)
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #Dormire
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
                 MDLabel:
                     text: "Ore dormite notte"
-                    halign: "left"
+                    halign: "left"  
+
+                MDLabel:
+                    id: label_dormire
+                    text: "0"  # Valore iniziale
+                    size_hint_x: None
+                    width: dp(40)
+                              
+                
                 MDSlider:
+                    id: dormire
                     step:1
                     value: 0
                     max: 12
+                    on_value: label_dormire.text = str(int(self.value)) 
+                    on_value: app.get_output(self,'dormire', *args)
                     MDSliderHandle:
 
-                    MDSliderValueLabel:
+                    MDSliderValueLabel: 
 
+
+
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #pisolino
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
                 MDLabel:
-                    text: "Pisolini"
+                    text: "Pisolino"
                     halign: "left"
                 MDCheckbox:
-                    id: pisolini
-                    on_active: app.on_checkbox_active(*args)
+                    id: pisolino
                     size_hint: None, None
                     size: "48dp", "48dp"
+                    on_active: app.get_output(self,'pisolino', *args)
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #sport
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
@@ -65,25 +94,46 @@ MDFloatLayout:
                     text: "Esercizio fisico"
                     halign: "left"
                 MDCheckbox:
-                    id: esercizio
-                    on_active: app.on_checkbox_active(*args)
+                    id: esercizio_fisico
                     size_hint: None, None
                     size: "48dp", "48dp"
+                    on_active: app.get_output(self,'sport', *args)
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #cacca
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
                 MDLabel:
                     text: "Cacca"
                     halign: "left"
+
+                MDLabel:
+                    id: label_cacca
+                    text: "0"  # Valore iniziale
+                    size_hint_x: None
+                    width: dp(40)
+                              
+                
                 MDSlider:
-                    step: 1
+                    id: cacca 
+                    step:1
                     value: 0
-                    max: 10
+                    max: 5
+                    on_value: label_cacca.text = str(int(self.value))
+                    on_value: app.get_output(self,'cacca', *args) 
                     MDSliderHandle:
 
-                    MDSliderValueLabel:
+                    MDSliderValueLabel: 
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #ridere
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
@@ -91,12 +141,16 @@ MDFloatLayout:
                     text: "Ridere"
                     halign: "left"
                 MDCheckbox:
-                    id: Ridere
-                    on_active: app.on_checkbox_active(*args)
+                    id: ridere
                     size_hint: None, None
                     size: "48dp", "48dp"
+                    on_active: app.get_output(self,'ridere', *args)
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
 
+            #piangere
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
@@ -104,38 +158,120 @@ MDFloatLayout:
                     text: "Piangere"
                     halign: "left"
                 MDCheckbox:
-                    id: pianger
-                    on_active: app.on_checkbox_active(*args)
-                    size_hint: None, None
-                    size: "48dp", "48dp"
-
+                    id: pianto
+                    active: False
+                    on_active: app.enable_other_checkbox(self, *args)
+                    on_active: app.get_output(self,'pianto', *args)
 
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
                 MDLabel:
-                    text: "Trombato"
+                    text: "Gioia"
                     halign: "left"
+                MDCheckbox:
+                    group: 'pianto'
+                    active: False
+                    disabled: True
+                    id: pianto_gioia
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+                    on_active: app.get_output(self,'pianto_gioia', *args)
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Tristezza"
+                    halign: "left"
+                MDCheckbox:
+                    group: 'pianto'
+                    id: pianto_tristezza
+                    active: False
+                    disabled: True
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+                    on_active: app.get_output(self,'pianto_tristezza', *args)
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Rabbia"
+                    halign: "left"
+                MDCheckbox:
+                    group: 'pianto'
+                    id: pianto_rabbia
+                    active: False
+                    disabled: True
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+                    on_active: app.get_output(self,'pianto_rabbia', *args)
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Occhi lucidi"
+                    halign: "left"
+                MDCheckbox:
+                    group: 'pianto'
+                    id: pianto_occhilucidi
+                    active: False
+                    disabled: True
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+                    on_active: app.get_output(self,'pianto_ochhilucidi', *args)
+
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #sesso
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Sesso"
+                    halign: "left"
+
+                MDLabel:
+                    id: label_sesso
+                    text: "0"  # Valore iniziale
+                    size_hint_x: None
+                    width: dp(40)
+                              
+                
                 MDSlider:
+                    id: sesso
                     step:1
                     value: 0
                     max: 5
+                    on_value: label_sesso.text = str(int(self.value)) 
+                    on_value: app.get_output(self,'sesso', *args)
                     MDSliderHandle:
 
-                    MDSliderValueLabel:
+                    MDSliderValueLabel: 
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #pizza
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
                 MDLabel:
-                    text: "Pizza mangiata"
+                    text: "Pizza"
                     halign: "left"
                 MDCheckbox:
-                    id: Pizza
-                    on_active: app.on_checkbox_active(*args)
+                    id: pizza
                     size_hint: None, None
                     size: "48dp", "48dp"
+                    on_active: app.get_output(self,'pizza', *args)
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #amici
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
@@ -144,10 +280,15 @@ MDFloatLayout:
                     halign: "left"
                 MDCheckbox:
                     id: amici
-                    on_active: app.on_checkbox_active(*args)
                     size_hint: None, None
                     size: "48dp", "48dp"
+                    on_active: app.get_output(self,'amici', *args)
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #alcolici
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
@@ -155,35 +296,133 @@ MDFloatLayout:
                     text: "Alcolici"
                     halign: "left"
                 MDCheckbox:
-                    id: alcolici
-                    on_active: app.on_checkbox_active(*args)
+                    id: alcol
                     size_hint: None, None
                     size: "48dp", "48dp"
-
+                    on_active: app.enable_other_checkbox(self, *args)
+                    on_active: app.get_output(self,'alcol', *args)
 
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
                 MDLabel:
-                    text: "Video giocare"
+                    text: "Sobrio"
+                    halign: "left"
+                MDCheckbox:
+                    group: 'alcol'
+                    active: False
+                    disabled: True
+                    id: alcol_sobrio
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+                    on_active: app.get_output(self,'alcol_sobrio', *args)
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Brillo"
+                    halign: "left"
+                MDCheckbox:
+                    group: 'alcol'
+                    active: False
+                    disabled: True
+                    id: alcol_brillo
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+                    on_active: app.get_output(self,'alcol_brillo', *args)
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Devastato"
+                    halign: "left"
+                MDCheckbox:
+                    group: 'alcol'
+                    active: False
+                    disabled: True
+                    id: alcol_devastato
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+                    on_active: app.get_output(self,'alcol_devastato', *args)
+
+
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #videogames
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Videogiochi"
                     halign: "left"
                 MDCheckbox:
                     id: videogames
-                    on_active: app.on_checkbox_active(*args)
                     size_hint: None, None
                     size: "48dp", "48dp"
+                    on_active: app.get_output(self,'videogames', *args)
 
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
 
+            #stress
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDLabel:
+                    text: "Giornata pesante"
+                    halign: "left"
+                MDCheckbox:
+                    id: stress
+                    size_hint: None, None
+                    size: "48dp", "48dp"
+                    on_active: app.get_output(self,'stress', *args)
+
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            #Fumare
             MDBoxLayout:
                 size_hint_y: None
                 height: dp(40)
                 MDLabel:
                     text: "Sigarette"
                     halign: "left"
+
+                MDLabel:
+                    id: label_fumo
+                    text: "0"  # Valore iniziale
+                    size_hint_x: None
+                    width: dp(40)
+                              
+                
                 MDSlider:
-                    step: 1
+                    id: fumo
+                    step:1
                     value: 0
                     max: 10
+                    on_value: label_fumo.text = str(int(self.value)) 
+                    on_value: app.get_output(self,'fumo', *args)
                     MDSliderHandle:
 
-                    MDSliderValueLabel:
+                    MDSliderValueLabel: 
+
+            MDDivider:
+                size_hint_x: 1.
+                pos_hint: {'center_x': .5, 'center_y': .5}
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                MDButton:
+                    style: "elevated"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    on_press: app.obtain_data_vector(self,*args)
+                    MDButtonIcon:
+                        icon: "content-save-all-outline"
+
+                    MDButtonText:
+                        text: "Salva"            
