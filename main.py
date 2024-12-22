@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 import csv
 import os
 import pandas as pd
+import numpy as np
 
 
 
@@ -45,6 +46,7 @@ class HowMuchI(MDApp):
     def on_start(self):
         # Chiama load_previous_data quando la root è popolata
         self.load_previous_data(self.yesterday)
+        self.count_streak()
     
     def choose_data(self,):
         pass
@@ -106,6 +108,8 @@ class HowMuchI(MDApp):
                 
             self.values.append(val)
             
+        saved=True
+        self.values.append(saved)    
         print(self.values)
         self.write_csv(self.values)
             
@@ -133,6 +137,8 @@ class HowMuchI(MDApp):
         
         # Salva il DataFrame aggiornato di nuovo nel file CSV
         df.to_csv(csv_file, index=False)
+        
+        self.count_streak()
 
         print(f"Riga aggiornata o aggiunta per la data {date_to_update}.")
 
@@ -235,6 +241,7 @@ class HowMuchI(MDApp):
         # Intestazioni delle colonne
         headers = ['data']
         headers += self.list_id
+        headers += ['saved']
 
         # Controlla se il file esiste già
         if os.path.exists(self.filename):
@@ -247,7 +254,7 @@ class HowMuchI(MDApp):
         num_days = (end_date - start_date).days
 
         # Valori predefiniti per le colonne
-        default_values = [0., 'False', 'False', 0., 'False', 'False', 'False', 'False', 'False', 'False', 0., 'False', 'False', 'False', 'False', 'False', 'False', 'False', 'False', 0.]
+        default_values = [0., 'False', 'False', 0., 'False', 'False', 'False', 'False', 'False', 'False', 0., 'False', 'False', 'False', 'False', 'False', 'False', 'False', 'False', 0.,'False']
 
         # Genera i dati per ogni giorno
         rows = []
@@ -263,7 +270,17 @@ class HowMuchI(MDApp):
 
         print(f"CSV file '{self.filename}' with {len(headers)} columns and {num_days} rows created successfully.")
 
-        
-                
+    def count_streak(self):
+        csv_file = self.filename 
+        df = pd.read_csv(csv_file)
+        saves = df.iloc[:, -1].to_numpy()
+        yesterday = datetime.strptime(self.yesterday, "%Y-%m-%d")
+        numero_giorno = int(( yesterday- datetime(yesterday.year, 1, 1)).days)
+        i = numero_giorno
+        streak = 0
+        while saves[i] and i<=numero_giorno:
+            streak += 1
+            i -=1
+        self.root.ids['streak_salvataggi_numero'].text = str(streak)
                          
 HowMuchI().run()

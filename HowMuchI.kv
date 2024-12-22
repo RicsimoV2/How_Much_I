@@ -30,6 +30,19 @@ MDFloatLayout:
             icon: "calendar"
             pos_hint: {"center_x": .5, "center_y": .5}
 
+    #streak
+    MDButton:
+        id: streak_salvataggi
+        style: "elevated"
+        pos_hint: {'center_x': .8, 'center_y': .9}
+        MDButtonIcon:
+            icon: "fire-circle"
+            size: "100dp", "100dp"
+            pos_hint: {"center_x": .2, "center_y": .5}
+        MDButtonText:
+            id: streak_salvataggi_numero
+            text: "Streak"
+
 
     ScrollView:
         size_hint_y: None
@@ -425,11 +438,13 @@ MDFloatLayout:
                 pos_hint: {'center_x': .5, 'center_y': .5}
 
             MDBoxLayout:
-                size_hint_y: None
-                height: dp(40)
+                size_hint: None, None
+                size: dp(200), dp(60)  # Dimensioni del pulsante
+                pos_hint: {"center_x": 0.55, "y": 0.02}  # Centrato in basso
+                padding: [dp(16), dp(16), dp(16), dp(16)]
+
                 MDButton:
                     style: "elevated"
-                    pos_hint: {"center_x": .5, "center_y": .5}
                     on_press: app.obtain_data_vector(self,*args)
                     MDButtonIcon:
                         icon: "content-save-all-outline"
