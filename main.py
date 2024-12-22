@@ -3,11 +3,18 @@ from kivy.properties import StringProperty
 
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.dialog import (
+    MDDialog,
+    MDDialogIcon,
+    MDDialogHeadlineText,
+    MDDialogSupportingText
+)
 
 from datetime import datetime, timedelta
 import csv
 import os
 import pandas as pd
+
 
 
 class HowMuchI(MDApp):
@@ -18,13 +25,20 @@ class HowMuchI(MDApp):
                         'pianto_occhilucidi','sesso','pizza','amici','alcol',
                         'alcol_sobrio','alcol_brillo','alcol_devastato','videogames',
                         'stress','fumo']
+        self.mask_boolean = [False,True,True,False,True,True,True,True,True,True,False,True,True,True,True,True,True,True,True,False]
         self.create_csv_file()
-        self.today = datetime.today().strftime("%d %B %Y")
+        self.today = datetime.today().strftime("%Y-%m-%d")
         self.yesterday = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
-        self.title_text = f"Cosa hai fatto ieri ({self.yesterday}) ?"
         self.theme_cls.primary_palette = "Purple"
         self.theme_cls.theme_style = "Dark"
-        return Builder.load_file('HowMuchI.kv')
+        # Carica il layout KV
+        root = Builder.load_file('HowMuchI.kv')
+        
+        return root
+    
+    def on_start(self):
+        # Chiama load_previous_data quando la root è popolata
+        self.load_previous_data(self.yesterday)
     
     def get_output(self,widget,data_name,*args):
         # try:
@@ -36,20 +50,21 @@ class HowMuchI(MDApp):
     def obtain_data_vector(self, *args):
         self.data = []
         self.data.append(self.yesterday)
-        for label in self.list_id:
-            try:
+        for i,label in enumerate(self.list_id):
+            if self.mask_boolean[i]:
+                val = self.root.ids[label].active   
+            else:
                 val = self.root.ids[label].value
-            except:
-                val = self.root.ids[label].active
                 
             self.data.append(val)
             
         print(self.data)
         self.write_csv(self.data)
             
-    
+    def update_title(self,data):
+        self.root.ids['title'].text = f"Cosa hai fatto il {data} ?"
+        
     def write_csv(self,data_vector):
-
         # Nome del file CSV
         csv_file = self.filename
         
@@ -73,6 +88,62 @@ class HowMuchI(MDApp):
 
         print(f"Riga aggiornata o aggiunta per la data {date_to_update}.")
 
+    def load_previous_data(self,data):
+        data_object = datetime.strptime(data, "%Y-%m-%d")
+        
+        if data_object > datetime.today():
+            title = 'Data non disponibile!'
+            error_message = f'Il giorno {data} è nel futuro.'
+            self.show_error_popup(title,error_message)
+            csv_file = self.filename 
+            df = pd.read_csv(csv_file)          
+            data = self.yesterday
+        
+        else:
+            if data_object.year < datetime.now().year:
+                filename = f"data_{data_object.year}.csv"
+                csv_file = filename
+            else:
+                csv_file = self.filename
+            # Carica il file CSV in un DataFrame
+            try:
+                df = pd.read_csv(csv_file)
+            except:
+                title = 'Dati non disponibili!'
+                error_message = f'Non sono stati trovati dati per il giorno {data}.'
+                self.show_error_popup(title,error_message)
+                csv_file = self.filename 
+                df = pd.read_csv(csv_file)          
+                data = self.yesterday
+            
+        self.update_title(data)    
+        # Controlla se la data esiste nel DataFrame
+        data_vector = df.loc[df['data'] == data]
+        row = data_vector.iloc[0]
+        for i,label in enumerate(self.list_id):
+            
+            if self.mask_boolean[i]:
+                self.root.ids[label].active = bool(row.iloc[i+1])
+            else:
+                self.root.ids[label].value = float(row.iloc[i+1])
+            print(f"Updating widget {label} with value {row.iloc[i+1]}")
+
+
+    def show_error_popup(self, title, error_message):
+        MDDialog(
+            # ----------------------------Icon-----------------------------
+            MDDialogIcon(
+                icon="allert-circle-outline",
+            ),
+            # -----------------------Headline text-------------------------
+            MDDialogHeadlineText(
+                text=title,
+            ),
+            # -----------------------Supporting text-----------------------
+            MDDialogSupportingText(
+                text=error_message,
+            )
+        ).open()
 
     def enable_other_checkbox(self,switch,*args):
         """
@@ -112,34 +183,38 @@ class HowMuchI(MDApp):
         # Nome del file basato sull'anno corrente
         current_year = datetime.now().year 
         self.filename = f"data_{current_year}.csv"
-        
+
         # Intestazioni delle colonne
         headers = ['data']
         headers += self.list_id
-        
+
         # Controlla se il file esiste già
         if os.path.exists(self.filename):
             print(f"The file '{self.filename}' already exists. No action taken.")
             return
-        
+
         # Calcola il numero di giorni nell'anno corrente
         start_date = datetime(current_year, 1, 1)
         end_date = datetime(current_year + 1, 1, 1)  # Primo giorno dell'anno successivo
         num_days = (end_date - start_date).days
-        
+
+        # Valori predefiniti per le colonne
+        default_values = [0., 'False', 'False', 0., 'False', 'False', 'False', 'False', 'False', 'False', 0., 'False', 'False', 'False', 'False', 'False', 'False', 'False', 'False', 0.]
+
         # Genera i dati per ogni giorno
         rows = []
         for day in range(num_days):
             date = start_date + timedelta(days=day)
-            rows.append([date.strftime("%Y-%m-%d")] + [""] * (len(headers) - 1))  # Colonna della data più colonne vuote
-        
+            rows.append([date.strftime("%Y-%m-%d")] + default_values)
+
         # Scrive il file CSV
         with open(self.filename, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(headers)
             writer.writerows(rows)
-        
+
         print(f"CSV file '{self.filename}' with {len(headers)} columns and {num_days} rows created successfully.")
+
         
                 
                          
