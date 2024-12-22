@@ -9,6 +9,9 @@ from kivymd.uix.dialog import (
     MDDialogHeadlineText,
     MDDialogSupportingText
 )
+from kivymd.uix.pickers import MDModalInputDatePicker, MDModalDatePicker
+from kivy.metrics import dp
+from kivy.clock import Clock
 
 from datetime import datetime, timedelta
 import csv
@@ -36,9 +39,15 @@ class HowMuchI(MDApp):
         
         return root
     
+    
+    
+    
     def on_start(self):
         # Chiama load_previous_data quando la root è popolata
         self.load_previous_data(self.yesterday)
+    
+    def choose_data(self,):
+        pass
     
     def get_output(self,widget,data_name,*args):
         # try:
@@ -46,20 +55,59 @@ class HowMuchI(MDApp):
         # except:
         #     print(data_name,widget.active)
         pass
-            
+
+    def show_date_picker(self,*args):
+        date_dialog = MDModalDatePicker(   mark_today=True,
+        min_date=datetime.strptime('2023-01-01', "%Y-%m-%d").date(),
+        max_date=datetime.today().date()
+        )
+        date_dialog.bind(on_edit=self.on_edit)
+        # date_dialog.bind(on_select_day=self.on_select_day)
+        date_dialog.bind(on_cancel=self.on_cancel)
+        date_dialog.bind(on_ok=self.on_ok)
+        date_dialog.open()
+
+    def show_modal_input_date_picker(self, *args):
+        def on_edit(*args):
+            date_dialog.dismiss()
+            Clock.schedule_once(self.show_date_picker, 0.2)
+
+        date_dialog = MDModalInputDatePicker()
+        date_dialog.bind(on_edit=on_edit)
+        date_dialog.bind(on_cancel=self.on_cancel)
+        date_dialog.bind(on_ok=self.on_ok)
+        date_dialog.open()
+
+    def on_ok(self, instance_date_picker):
+        instance_date_picker.dismiss()
+        self.data=(instance_date_picker.get_date()[0]).strftime("%Y-%m-%d")
+        self.load_previous_data(self.data)
+
+    def on_cancel(self, instance_date_picker):
+        instance_date_picker.dismiss()
+
+    def on_edit(self, instance_date_picker):
+        instance_date_picker.dismiss()
+        Clock.schedule_once(self.show_modal_input_date_picker, 0.2)
+
+    def on_select_day(self, instance_date_picker, number_day):
+        instance_date_picker.dismiss()
+        self.data=(instance_date_picker.get_date()[0]).strftime("%Y-%m-%d")
+        self.load_previous_data(self.data)
+           
     def obtain_data_vector(self, *args):
-        self.data = []
-        self.data.append(self.yesterday)
+        self.values = []
+        self.values.append(self.data)
         for i,label in enumerate(self.list_id):
             if self.mask_boolean[i]:
                 val = self.root.ids[label].active   
             else:
                 val = self.root.ids[label].value
                 
-            self.data.append(val)
+            self.values.append(val)
             
-        print(self.data)
-        self.write_csv(self.data)
+        print(self.values)
+        self.write_csv(self.values)
             
     def update_title(self,data):
         self.root.ids['title'].text = f"Cosa hai fatto il {data} ?"
@@ -89,19 +137,20 @@ class HowMuchI(MDApp):
         print(f"Riga aggiornata o aggiunta per la data {date_to_update}.")
 
     def load_previous_data(self,data):
-        data_object = datetime.strptime(data, "%Y-%m-%d")
+        self.data=data
+        data_object = datetime.strptime(self.data, "%Y-%m-%d")
         
         if data_object > datetime.today():
             title = 'Data non disponibile!'
-            error_message = f'Il giorno {data} è nel futuro.'
+            error_message = f'Il giorno {self.data} è nel futuro.'
             self.show_error_popup(title,error_message)
             csv_file = self.filename 
             df = pd.read_csv(csv_file)          
-            data = self.yesterday
+            self.data = self.yesterday
         
         else:
             if data_object.year < datetime.now().year:
-                filename = f"data_{data_object.year}.csv"
+                filename = f"data_{self.data_object.year}.csv"
                 csv_file = filename
             else:
                 csv_file = self.filename
@@ -110,15 +159,15 @@ class HowMuchI(MDApp):
                 df = pd.read_csv(csv_file)
             except:
                 title = 'Dati non disponibili!'
-                error_message = f'Non sono stati trovati dati per il giorno {data}.'
+                error_message = f'Non sono stati trovati dati per il giorno {self.data}.'
                 self.show_error_popup(title,error_message)
                 csv_file = self.filename 
                 df = pd.read_csv(csv_file)          
-                data = self.yesterday
+                self.data = self.yesterday
             
-        self.update_title(data)    
+        self.update_title(self.data)    
         # Controlla se la data esiste nel DataFrame
-        data_vector = df.loc[df['data'] == data]
+        data_vector = df.loc[df['data'] == self.data]
         row = data_vector.iloc[0]
         for i,label in enumerate(self.list_id):
             
@@ -127,7 +176,6 @@ class HowMuchI(MDApp):
             else:
                 self.root.ids[label].value = float(row.iloc[i+1])
             print(f"Updating widget {label} with value {row.iloc[i+1]}")
-
 
     def show_error_popup(self, title, error_message):
         MDDialog(
