@@ -12,6 +12,7 @@
 
 MDFloatLayout:
 
+
     #Titolo
     MDLabel:
         id: title
@@ -21,23 +22,26 @@ MDFloatLayout:
         size_hint_y: 0.2
         height: self.texture_size[1] + dp(24)
 
+
+
     #calendario
     MDButton:
         style: "elevated"
-        pos_hint: {'center_x': .7, 'center_y': .9}
+        pos_hint: {'center_x': .35, 'center_y': .85}
         on_release: app.show_date_picker()
         MDButtonIcon:
             icon: "calendar"
+            size: "300dp", "300dp"
             pos_hint: {"center_x": .5, "center_y": .5}
 
     #streak
     MDButton:
         id: streak_salvataggi
         style: "elevated"
-        pos_hint: {'center_x': .8, 'center_y': .9}
+        pos_hint: {'center_x': .65, 'center_y': .85}
         MDButtonIcon:
             icon: "fire-circle"
-            size: "100dp", "100dp"
+            size: "300dp", "300dp"
             pos_hint: {"center_x": .2, "center_y": .5}
         MDButtonText:
             id: streak_salvataggi_numero
@@ -84,7 +88,7 @@ MDFloatLayout:
                     on_value: app.get_output(self,'dormire', *args)
                     MDSliderHandle:
 
-                    MDSliderValueLabel: 
+                    #MDSliderValueLabel: 
 
 
 
@@ -150,7 +154,7 @@ MDFloatLayout:
                     on_value: app.get_output(self,'cacca', *args) 
                     MDSliderHandle:
 
-                    MDSliderValueLabel: 
+                    #MDSliderValueLabel: 
 
             MDDivider:
                 size_hint_x: 1.
@@ -271,7 +275,7 @@ MDFloatLayout:
                     on_value: app.get_output(self,'sesso', *args)
                     MDSliderHandle:
 
-                    MDSliderValueLabel: 
+                    #MDSliderValueLabel: 
 
             MDDivider:
                 size_hint_x: 1.
@@ -431,7 +435,7 @@ MDFloatLayout:
                     on_value: app.get_output(self,'fumo', *args)
                     MDSliderHandle:
 
-                    MDSliderValueLabel: 
+                    #MDSliderValueLabel: 
 
             MDDivider:
                 size_hint_x: 1.
@@ -440,12 +444,13 @@ MDFloatLayout:
             MDBoxLayout:
                 size_hint: None, None
                 size: dp(200), dp(60)  # Dimensioni del pulsante
-                pos_hint: {"center_x": 0.55, "y": 0.02}  # Centrato in basso
+                pos_hint: {"center_x": 0.6, "y": 0.02}  # Centrato in basso
                 padding: [dp(16), dp(16), dp(16), dp(16)]
 
                 MDButton:
                     style: "elevated"
                     on_press: app.obtain_data_vector(self,*args)
+                    on_press: app.show_error_popup("Salvataggio", "Salvataggio avvenuto con successo!")
                     MDButtonIcon:
                         icon: "content-save-all-outline"
 
